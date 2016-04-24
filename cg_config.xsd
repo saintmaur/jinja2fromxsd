@@ -1,0 +1,1943 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2013 (x64) (http://www.altova.com) by CJSC PETER-SERVICE (CJSC PETER-SERVICE) -->
+<!-- PETER-SERVICE (CJSC PETER-SERVICE) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<xs:element name="Configuration">
+		<xs:annotation>
+			<xs:documentation>Корневой тег конфигурации</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="Logger"/>
+				<xs:element ref="System"/>
+				<xs:element ref="Interfaces"/>
+				<xs:element ref="Diagnostics" minOccurs="0"/>
+				<xs:element ref="AMQP" minOccurs="0"/>
+				<xs:element name="Database" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Тег конфигурации DBController</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Connect">
+								<xs:annotation>
+									<xs:documentation>Тег параметров соединения с базой данных.</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="Login" type="xs:string" use="required">
+										<xs:annotation>
+											<xs:documentation>Строка, определяющая пользователя для соединения c базой данных BIS в формате:
+USER/PASS
+Где,
+USER – имя пользователя, для которого создана роль для работы BRT_SRV и под которым устанавливается соединение,
+PASS – пароль для доступа.
+Данный параметр является единственной шифруемой составляющей строк соединения с базой данных в случае использования опции криптования строки соединения.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="Str" use="required">
+										<xs:annotation>
+											<xs:documentation>Задает имя базы данных Oracle, используемой для загрузки кэша и обработки TEVT событий.  
+При использовании опции криптования не шифруется.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="1"/>
+												<xs:maxLength value="256"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="Key" default="">
+										<xs:annotation>
+											<xs:documentation>Определяет ключ для дешифрации строки соединения с БД, определенной параметром &quot;Login&quot;. Если параметр задан пустой строкой, дешифрация не требуется.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="0"/>
+												<xs:maxLength value="256"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+									<xs:attribute name="CryptLibrary" default="">
+										<xs:annotation>
+											<xs:documentation>Задает путь к динамической библиотеке для дешифрации строк коннекта. Если параметр задан пустой строкой, дешифрация не производится.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:minLength value="0"/>
+												<xs:maxLength value="256"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:attribute>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="ReconnectErrorList" use="optional" default="">
+							<xs:annotation>
+								<xs:documentation>Определяет списк дополнительных ошибок oracle, требующих reconnect. (см. раздел «Список базовых ошибок oracle, требующих повторного соединения с базой данных» гл.3).
+[Restart=N]</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="512"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:attribute>
+						<!--      <xs:attribute name="AccountTypes" use="optional" default="">
+        <xs:annotation>
+          <xs:documentation>
+            [Restart=N]
+          </xs:documentation>
+        </xs:annotation>
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:maxLength value="512"/>
+            <xs:pattern value="" />
+            <xs:pattern value="\d+:\d+(,\d+:\d+)*" />
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:attribute> -->
+					</xs:complexType>
+				</xs:element>
+				<xs:element ref="Zookeeper"/>
+				<xs:element name="Shard">
+					<xs:complexType>
+						<xs:attribute name="Name" use="required"/>
+						<xs:attribute name="Type" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="DBWQ">
+					<xs:complexType>
+						<xs:attribute name="BulkSize" use="required"/>
+						<xs:attribute name="AttemptCount" use="required"/>
+						<xs:attribute name="RetryTimeout" use="required"/>
+						<xs:attribute name="FlowNumber" use="required"/>
+						<xs:attribute name="CollectBulkTimeout" type="non_negative_timeout" use="required"/>
+						<xs:attribute name="Expires" type="non_negative_timeout" use="optional" default="120s"/>
+                        <xs:attribute name="UniqueErrorThreshold" use="optional" default="3"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Folders" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Тег конфигурации Folder Controller</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Calls">
+								<xs:annotation>
+									<xs:documentation>Файлы вызовов</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="TmpPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет временный каталог для обрабатываемых файлов.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="OutPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет выходной каталог для файлов
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="BulkSize" use="required">
+										<xs:annotation>
+											<xs:documentation>Число записей, помещаемых в формируемый файл</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="AttemptCount">
+										<xs:annotation>
+											<xs:documentation>Количество попыток записи файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="CollectBulkTimeout">
+										<xs:annotation>
+											<xs:documentation>Таймаут заполнения буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FilePrefix">
+										<xs:annotation>
+											<xs:documentation>Префикс файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileExtention">
+										<xs:annotation>
+											<xs:documentation>Расширение</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при вызове setvbuf. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="SaveBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при сохранении данных на диск. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>                                    
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="BISEvents">
+								<xs:annotation>
+									<xs:documentation>Учет событий (BIS_EVENTS), не связанных с вызовами</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="TmpPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет временный каталог для обрабатываемых файлов.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="OutPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет выходной каталог для файлов
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="BulkSize">
+										<xs:annotation>
+											<xs:documentation>Размер буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="AttemptCount">
+										<xs:annotation>
+											<xs:documentation>Количество попыток записи файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="CollectBulkTimeout">
+										<xs:annotation>
+											<xs:documentation>Таймаут заполнения буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FilePrefix">
+										<xs:annotation>
+											<xs:documentation>Префикс файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileExtention">
+										<xs:annotation>
+											<xs:documentation>Расширение</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при вызове setvbuf. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="SaveBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при сохранении данных на диск. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>                                    
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CtrlEvents">
+								<xs:annotation>
+									<xs:documentation>Учет событий, связанных с вызовами</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="TmpPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет временный каталог для обрабатываемых файлов.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="OutPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет выходной каталог для файлов
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="BulkSize">
+										<xs:annotation>
+											<xs:documentation>Размер буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="AttemptCount">
+										<xs:annotation>
+											<xs:documentation>Количество попыток записи файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="CollectBulkTimeout">
+										<xs:annotation>
+											<xs:documentation>Таймаут заполнения буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FilePrefix">
+										<xs:annotation>
+											<xs:documentation>Префикс файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileExtention">
+										<xs:annotation>
+											<xs:documentation>Расширение</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при вызове setvbuf. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="SaveBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при сохранении данных на диск. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>                                    
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CDRLocal">
+								<xs:annotation>
+									<xs:documentation>Файлы локальных вызовов</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="TmpPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет временный каталог для обрабатываемых файлов.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="OutPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет выходной каталог для файлов
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="BulkSize">
+										<xs:annotation>
+											<xs:documentation>Размер буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="AttemptCount">
+										<xs:annotation>
+											<xs:documentation>Количество попыток записи файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="CollectBulkTimeout">
+										<xs:annotation>
+											<xs:documentation>Таймаут заполнения буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FilePrefix">
+										<xs:annotation>
+											<xs:documentation>Префикс файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileExtention">
+										<xs:annotation>
+											<xs:documentation>Расширение</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при вызове setvbuf. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="SaveBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при сохранении данных на диск. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>                                    
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="CDRRoam">
+								<xs:annotation>
+									<xs:documentation>Файлы роуминговых вызовов</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:attribute name="TmpPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет временный каталог для обрабатываемых файлов.
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="OutPath" use="required">
+										<xs:annotation>
+											<xs:documentation>Определяет выходной каталог для файлов
+[Restart=N]</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="BulkSize">
+										<xs:annotation>
+											<xs:documentation>Размер буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="AttemptCount">
+										<xs:annotation>
+											<xs:documentation>Количество попыток записи файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="CollectBulkTimeout">
+										<xs:annotation>
+											<xs:documentation>Таймаут заполнения буфера</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FilePrefix">
+										<xs:annotation>
+											<xs:documentation>Префикс файла</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileExtention">
+										<xs:annotation>
+											<xs:documentation>Расширение</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="FileBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при вызове setvbuf. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>
+									<xs:attribute name="SaveBufSize" use="optional" default="0">
+										<xs:annotation>
+											<xs:documentation>Размер буфера, используемого при сохранении данных на диск. 0 - не используется</xs:documentation>
+										</xs:annotation>
+									</xs:attribute>                                    
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="BulkSize" type="positive_uint32" use="optional" default="100"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Recovery" minOccurs="0">
+					<xs:complexType>
+						<xs:attribute name="HistoryDepth" use="optional" default="3"/>
+						<xs:attribute name="RlbExpires" use="optional" default="2h"/>
+						<xs:attribute name="CallExpires" use="optional" default="1d"/>
+						<xs:attribute name="BulkSize" default="1000"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+		<xs:unique name="all_id_unique">
+			<xs:selector xpath="./Logger/TurnON|./Logger/TurnOFF"/>
+			<xs:field xpath="@ID"/>
+		</xs:unique>
+		<!--    
+		<xs:unique name="cdr_class_unique">
+			<xs:selector xpath="./Interfaces/CDRStorage/CDR"/>
+			<xs:field xpath="@CDRClassName"/>
+			<xs:field xpath="@JobType"/>
+			<xs:field xpath="@CDRParsingType"/>
+		</xs:unique>     
+		<xs:unique name="sch_class_unique">
+			<xs:selector xpath="./System/Scheduler/Task"/>
+			<xs:field xpath="@KeyClass"/>
+			<xs:field xpath="@DataClass"/>
+		</xs:unique>
+		<xs:unique name="trc_class_unique">
+			<xs:selector xpath="./System/FileCaches/Cache"/>
+			<xs:field xpath="@KeyClass"/>
+			<xs:field xpath="@DataClass"/>
+			<xs:field xpath="@KeyParsingType"/>
+			<xs:field xpath="@DataParsingType"/>
+		</xs:unique>
+-->
+	</xs:element>
+	<xs:element name="System">
+		<xs:annotation>
+			<xs:documentation>Тег основного процессора</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ScriptEngine">
+					<xs:annotation>
+						<xs:documentation>Тег конфигурации LUA скриптов.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute name="ScriptPath" type="unc_path_type" use="optional" default="./scripts">
+							<xs:annotation>
+								<xs:documentation>
+                  Путь к папке с LUA скриптами.
+                  [Restart=N]
+                </xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="ScriptName" type="unc_path_type" use="required">
+							<xs:annotation>
+								<xs:documentation>
+                  Имя LUA скрипта ждя обработки событий.
+                  [Restart=N]
+                </xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="BackupPeriod" type="non_negative_timeout" use="optional" default="30d">
+							<xs:annotation>
+								<xs:documentation>
+                  Период хранения архивных версий скриптов LUA. Архивные версии хранятся в подкаталоге backup.
+                  [Restart=N]
+                </xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="UseDebugTrace" type="xs:boolean" use="optional" default="false">
+							<xs:annotation>
+								<xs:documentation>
+                  Флаг использования Debug трассировки (с выводом call stack) при выводе ошибок выполнения LUA функций.
+                  [Restart=N]
+                </xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="ScriptCheckTimeout" type="non_negative_timeout" use="optional" default="5s">
+							<xs:annotation>
+								<xs:documentation>
+                  Таймаут проверки изменений в файлах LUA скриптов.
+                  [Restart=N]
+                </xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="GarbageCollectTimeout" type="non_negative_timeout" use="optional" default="5s">
+							<xs:annotation>
+								<xs:documentation>Таймаут для принудительного вызова ф-ции сборки мусора.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="ScriptTimeout" type="non_negative_timeout" use="optional" default="60s">
+							<xs:annotation>
+								<xs:documentation>Максимальное время выполнения LUA скрипта. При значении 0 время выполнения скриптов не контролируется.</xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="DefList" type="xs:string" use="optional" default="*.def">
+							<xs:annotation>
+								<xs:documentation>
+                  Список файлов с определениями обрабатываемых событий и вспомогательных классов.
+                  [Restart=Y]
+                </xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+						<xs:attribute name="DefPath" type="unc_path_type" use="optional" default="./definitions">
+							<xs:annotation>
+								<xs:documentation>
+                  Путь, к файлам с определениями.
+                  [Restart=Y]
+                </xs:documentation>
+							</xs:annotation>
+						</xs:attribute>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="InstanceID" use="required">
+				<xs:annotation>
+					<xs:documentation>Задает идентификатор приложения размерностью два ASCII символа (предпочтительно первый буква, второй цифра).  
+[Restart=Y]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="LimitQueueSize" use="optional" default="1000000000">
+				<xs:annotation>
+					<xs:documentation>Задает максимальный размер очереди потоков обработки, при превышении которого, временно прекращается обработка новых вызовов без прекращения обработки ранее начатых.
+               Размер зависит от решаемых задач и отведения для них оперативной памяти.
+[Restart=Y]</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:nonNegativeInteger">
+						<xs:minInclusive value="10"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="ControlFlowNumber" use="optional" default="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:integer">
+						<xs:minInclusive value="1"/>
+						<xs:maxInclusive value="255"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="Profiling" type="xs:boolean" use="optional" default="0">
+				<xs:annotation>
+					<xs:documentation>
+            Флаг отключения отключения профилировшика вызовов функций доступных в LUA:
+            “0” – контроль времени выполнения выключен,
+            “1” – контроль времени выполнения включен.
+            [Restart=N]
+          </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="InitTimeout" type="non_negative_timeout" use="optional" default="10s"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="AMQP">
+		<xs:annotation>
+			<xs:documentation>Конфигурации AMQP соединений.</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="Client" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Конфигурация подключения к AMQP серверу.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="amqp_client">
+								<xs:sequence minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="Channel">
+										<xs:annotation>
+											<xs:documentation>Настройки коммуникационного канала для публикации или поребления сообщений.</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="Queue" minOccurs="0" maxOccurs="unbounded">
+													<xs:annotation>
+														<xs:documentation>Настройки конфигурируемой на AMQP сервере очереди сообщений.</xs:documentation>
+													</xs:annotation>
+													<xs:complexType>
+														<xs:sequence minOccurs="0">
+															<xs:element name="Declare" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Объявление очереди сообщений.</xs:documentation>
+																</xs:annotation>
+																<xs:complexType>
+																	<xs:attribute name="Passive" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг, определяющий необходимость создания очереди.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="Durable" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг, определяющий персистентность данных создаваемой очереди (гарантия сохранения очереди при рестарте AMQP сервера).</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="Exclusive" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг эксклюзивного доступа к декларируемой очереди.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="AutoDelete" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг автоматического удаления очереди при зпкрытии канала.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="NoWait" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг необходимости ожидания ответа от сервера.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="MessageTTL" type="non_negative_timeout" use="optional" default="0">
+																		<xs:annotation>
+																			<xs:documentation>Параметр задаёт время жизни сообщений в очереди (расширение RabbitMQ). По истечении таймаута сообщения удаляются.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="Expires" type="non_negative_timeout" use="optional" default="0">
+																		<xs:annotation>
+																			<xs:documentation>Параметр задаёт время жизни неиспользуемой очереди (расширение RabbitMQ). При отсутствии потребителей сервер дложен удалить очередь по истечении заданного таймаута.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																</xs:complexType>
+															</xs:element>
+															<xs:element name="Bind" minOccurs="0" maxOccurs="unbounded">
+																<xs:annotation>
+																	<xs:documentation>Связывание очереди с пунктом обмена сообщениями.</xs:documentation>
+																</xs:annotation>
+																<xs:complexType>
+																	<xs:attribute name="Exchange" type="amqp_shortstring" use="required">
+																		<xs:annotation>
+																			<xs:documentation>Идентифкатор пункта обмена, к которому привязывается очередь.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="RoutingKey" type="amqp_shortstring" use="required">
+																		<xs:annotation>
+																			<xs:documentation>Ключ выборки сообщений.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="NoWait" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг необходимости ожидания ответа от сервера.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																</xs:complexType>
+															</xs:element>
+															<xs:element name="Consume" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Создание потребителя сообщений очереди.</xs:documentation>
+																</xs:annotation>
+																<xs:complexType>
+																	<xs:attribute name="Tag" type="amqp_shortstring_req" use="required">
+																		<xs:annotation>
+																			<xs:documentation>Идентификатор потребителя. </xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="NoLocal" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг пропуска сообщений, пришедших с того же узла (не поддерживается в RabbitMQ).</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="NoAck" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг для отключения ожидания серером подтверждения обработки сообщений.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="Exclusive" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг эксклюзивного потребления сообщений из очереди.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="NoWait" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг необходимости ожидания ответа от сервера.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																</xs:complexType>
+															</xs:element>
+															<xs:element name="Delete" minOccurs="0">
+																<xs:annotation>
+																	<xs:documentation>Удаление очереди при закрытии канала.</xs:documentation>
+																</xs:annotation>
+																<xs:complexType>
+																	<xs:attribute name="IfUnused" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг удаления очереди при условии отсутствия потребителей. </xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="IfEmpty" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг удалания очереди при условии отстутствия сообщений.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																	<xs:attribute name="NoWait" type="xs:boolean" use="optional" default="false">
+																		<xs:annotation>
+																			<xs:documentation>Флаг необходимости ожидания ответа от сервера.</xs:documentation>
+																		</xs:annotation>
+																	</xs:attribute>
+																</xs:complexType>
+															</xs:element>
+														</xs:sequence>
+														<xs:attribute name="Name" type="amqp_shortstring" use="optional" default="">
+															<xs:annotation>
+																<xs:documentation>Имя очереди, используемое при коммуникации с AMQP сервером.</xs:documentation>
+															</xs:annotation>
+														</xs:attribute>
+													</xs:complexType>
+													<xs:unique name="amqp_queue_bind_unique">
+														<xs:selector xpath="./Bind"/>
+														<xs:field xpath="@Exchange"/>
+														<xs:field xpath="@RoutingKey"/>
+													</xs:unique>
+												</xs:element>
+											</xs:sequence>
+											<xs:attribute name="Num" type="amqp_chanel_id" use="required">
+												<xs:annotation>
+													<xs:documentation>Номер открываемого коммуникационного канала.</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="AllowPublish" type="xs:boolean" use="optional" default="false">
+												<xs:annotation>
+													<xs:documentation>Флаг доступности канала дял публикации сообщений. При установленном флаге через данный канал становится достпуна отправка сообщений через AMQP подписки при условии формирования имени подписчика в виде"point_id:channel_num".</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="PrefetchSize" type="memory_size" use="optional" default="">
+												<xs:annotation>
+													<xs:documentation>Размер упреждающей выборки в байтах (на данный момент не поддерживается в RabbitMQ). При заданном значении канал конфигурируется командой basic_qos.</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="PrefetchCount" type="xs:unsignedShort" use="optional" default="0">
+												<xs:annotation>
+													<xs:documentation>Размер упреждающей выборки в виде числа выбираемых сообщений. При заданном значении канал конфигурируется командой basic_qos.</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="TxMode" type="xs:boolean" use="optional" default="false">
+												<xs:annotation>
+													<xs:documentation>Флаг работы канала в транзакционном режиме (подтверждение операций через последовательности команд tx.select/tx.commit). Для гарантированности доставки рекомендуется установка этого параметра для каналов, используемых для публикации сообщений. Потребление сообщений подразумевает подтверждение обработки через передачу ack (если не настроен Consume.NoAck), соответственно для таких каналов TxMode необязателен.</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="CommitCount" type="xs:positiveInteger" use="optional" default="1000">
+												<xs:annotation>
+													<xs:documentation>Количество сообщений для фиксации результатов обработки сообщений.
+Для публикуемых сообщений в транзакционном режиме при достижении заданного лимита переданных сообщений происходит фиксация операции (tx.commit).
+Для потребляемых сообщений данный лимит испольуется как число принятых сообщений, при достижении которого выполняется подтверждение обработки (basic.ack).
+Если используется паковка нескольких нотификаций в одно AMQP сообщение, то параметр учитывает число упакованных сообщений.</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="CommitTimeout" type="positive_timeout" use="optional" default="1s">
+												<xs:annotation>
+													<xs:documentation>Данный параметр определяет время, в течении которого копится счетчик сообщений, учитываемый параметром CommitCount. По истечении заданного времени производится фиксация операции (даже если число обработанных сообщений не достигло параметра CommitCount).
+Т.е. фиксация обработки производится на CommitCount сообщений, но не реже, чем раз в CommitTimeout.</xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+										</xs:complexType>
+										<xs:unique name="amqp_channel_queue_name_unique">
+											<xs:selector xpath="./Queue"/>
+											<xs:field xpath="@Name"/>
+										</xs:unique>
+									</xs:element>
+								</xs:sequence>
+								<xs:attribute name="ID" type="cfg_id_string" use="required">
+									<xs:annotation>
+										<xs:documentation>Внутренний идентификатор TCP точки.
+[Restart=N]</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="Login" type="login_string" use="optional" default="guest">
+									<xs:annotation>
+										<xs:documentation>Логин для подключения к AMQP серверу.</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="Password" type="password_string" use="optional" default="guest">
+									<xs:annotation>
+										<xs:documentation>Пароль для подключения к AMQP серверу.</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="VirtualHost" type="amqp_shortstring_req" use="optional" default="/">
+									<xs:annotation>
+										<xs:documentation>Виртуальный хост AMQP сервера, к которому производится подключение.</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:extension>
+						</xs:complexContent>
+					</xs:complexType>
+					<xs:unique name="amqp_client_channel_num_unique">
+						<xs:selector xpath="./Channel"/>
+						<xs:field xpath="@Num"/>
+					</xs:unique>
+				</xs:element>
+				<xs:element name="Server" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Конфигурация AMQP сервера (только для тестирования).</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="amqp_server">
+								<xs:attribute name="ID" type="cfg_id_string" use="required">
+									<xs:annotation>
+										<xs:documentation>Внутренний идентификатор TCP точки.
+[Restart=N]</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="Login" type="login_string" use="optional" default=""/>
+								<xs:attribute name="Password" type="password_string" use="optional" default=""/>
+							</xs:extension>
+						</xs:complexContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Queue" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Конфигурация AMQP очереди.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="QueueType">
+								<xs:attribute name="Exchange" type="xs:string" use="required">
+									<xs:annotation>
+										<xs:documentation>Идентфикатор пункта обмена сообщениями AMQP сервера, в котором будут публиковаться сбоираемые в очередь сообщения. </xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="ContentType" type="amqp_content_type" use="optional" default="application/json">
+									<xs:annotation>
+										<xs:documentation>Тип кодирования содержимого передаваемых сообщений.</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="PackCount" use="optional" default="200">
+									<xs:annotation>
+										<xs:documentation>Число событий, упаковываемых в одно AMQP сообщение.</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:positiveInteger">
+											<xs:maxInclusive value="5000"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="DeliveryMode" type="amqp_delivery_mode" use="optional" default="default">
+									<xs:annotation>
+										<xs:documentation>Режим доставки сообщений.</xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:extension>
+						</xs:complexContent>
+					</xs:complexType>
+				</xs:element>
+			</xs:choice>
+			<xs:attribute name="BulkSize" type="positive_uint32" use="optional" default="100"/>
+		</xs:complexType>
+		<xs:unique name="amqp_point_id_unique">
+			<xs:selector xpath="./Client|Server"/>
+			<xs:field xpath="@ID"/>
+		</xs:unique>
+	</xs:element>
+	<xs:element name="Logger">
+		<xs:annotation>
+			<xs:documentation>Тег конфигурации LoggerController</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="TurnON" type="TurnType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Теги включения вывода в журнал.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="TurnOFF" type="TurnType" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Теги выключения вывода в журнал.</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:attribute name="MaxRecordsPerFile" type="xs:positiveInteger" use="optional" default="100000">
+				<xs:annotation>
+					<xs:documentation>Задает максимальное число выводимых записей в файл журнала. Данный параметр дает возможность лимитировать размер файлов журналирования для их последующего анализа и  архивации. При создании каждый раз в имя файла включается дата его создания таким образом, что бы автоматически обеспечивалась сортировка файлов в каталоге.
+Рекомендуемый диапазон значений: От 10000 до 1000000.
+[Restart=N]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Interfaces">
+		<xs:annotation>
+			<xs:documentation>Тег основного процессора</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:all>
+				<xs:element name="TelnetServer">
+					<xs:annotation>
+						<xs:documentation>Тег параметров, предназначенных для конфигурирования telnet -сервера.</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="TelnetServer">
+								<xs:attribute name="Prompt" use="optional" default="SG: ">
+									<xs:annotation>
+										<xs:documentation>
+                      Формат строки приглашения, выводимой при ожидании команды со стороны telnet сервера.
+                      [Retart=N]
+                    </xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:maxLength value="10"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="Login" use="optional" default="">
+									<xs:annotation>
+										<xs:documentation>Имя пользователя для подключения к telnet серверу.Restart=N</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:maxLength value="64"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="Password" use="optional" default="">
+									<xs:annotation>
+										<xs:documentation>Пароль для подключения к telnet серверу. Restart=N</xs:documentation>
+									</xs:annotation>
+									<xs:simpleType>
+										<xs:restriction base="xs:string">
+											<xs:maxLength value="64"/>
+										</xs:restriction>
+									</xs:simpleType>
+								</xs:attribute>
+								<xs:attribute name="LogSessions" type="xs:boolean" use="optional" default="0">
+									<xs:annotation>
+										<xs:documentation>
+                      Флаг логирования всех telnet сессий.
+                      [Restart=N]
+                    </xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+								<xs:attribute name="InteractiveMode" type="xs:boolean" default="false">
+									<xs:annotation>
+										<xs:documentation>
+                      Включает интерактивный режим взаимодействия сервера с терминалом. В этом режиме поддерживаются: редактирование команд на стороне сервера, расцветка вывода и просмотр истории введённых команд (пролистывается курсором).
+                      [Restart=N]
+                    </xs:documentation>
+									</xs:annotation>
+								</xs:attribute>
+							</xs:extension>
+						</xs:complexContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PTCPPoints" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Параметры PTCP точек</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Point" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="ServerClientTCPPoint">
+											<xs:attribute name="ID" type="hex_byte" use="required"/>
+											<xs:attribute name="ScriptName" type="unc_path_type" use="optional" default="ptcp.lua">
+												<xs:annotation>
+													<xs:documentation>
+                            Имя LUA скрипта для предобработки.
+                            [Restart=N]
+                          </xs:documentation>
+												</xs:annotation>
+											</xs:attribute>
+											<xs:attribute name="ClassName" type="xs:string" use="optional" default=""/>
+											<xs:attribute name="ShardType" type="ptcp_shard_type"/>
+											<xs:attribute name="ShardName"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:all>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Diagnostics">
+		<xs:annotation>
+			<xs:documentation>Тег конфигурации DiagnosticController</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="StatisticsSnapshotPeriod" type="positive_timeout" use="optional" default="30s">
+				<xs:annotation>
+					<xs:documentation>Задает период сбора статистической информации (в миллисекундах).
+[Restart=N]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="SendNotifOnStatUpdate" type="xs:boolean" use="optional" default="0">
+				<xs:annotation>
+					<xs:documentation>Определяет необходимоть отправки диагностического оповещения при готовности статистических данных
+«0» – не отправлять диагностическое оповещение;
+«1» – отправлять диагностическое оповещение.
+[Restart=N]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="SnmpAgentLibPath" type="xs:string" use="optional" default="">
+				<xs:annotation>
+					<xs:documentation>Задает полный путь к динамической библиотеке SNMP агента ПЕТЕР-СЕРВИС, реализующей поддержку обмена по протоколу SNMP.
+[Restart=Y]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="UseSignalCatch" type="xs:boolean" use="optional" default="0">
+				<xs:annotation>
+					<xs:documentation>Определяет использование функции перехвата сигналов.
+«0» – не использовать функцию перехвата сигналов;
+«1» – использовать функцию перехвата сигналов.
+[Restart=Y]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="SignalCatchScriptPath" use="optional" default="">
+				<xs:annotation>
+					<xs:documentation>Задает полный путь к скрипт-файлу, позволяющему выполнить необходимые операции в случае остановки приложения по перехвату сигнала.
+[Restart=N]</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:minLength value="0"/>
+						<xs:maxLength value="256"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:attribute>
+			<xs:attribute name="SignalCatchStopProcessTimeout" type="positive_timeout" use="optional" default="2m">
+				<xs:annotation>
+					<xs:documentation>Задает время ожидания остановки приложения после перехвата критичного сигнала (в миллисекундах).
+[Restart=N]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="EnableAllThreadsBacktrace" type="xs:boolean" use="optional" default="1">
+				<xs:annotation>
+					<xs:documentation>
+            Задает возможность отключить получение стека вызовов всех потоков (кроме потока, получившего сигнал) при обработке критического сигнала.
+[Restart=N]</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="ApplExecInfoPeriod" type="non_negative_timeout" use="optional" default="30s">
+				<xs:annotation>
+					<xs:documentation>Задает период сбора статистической информации о потребляемых приложением ресурсах (в миллисекундах):
+загрузка CPU и опрерационной системы, память и т.д.. При значении, равном 0, сбор (обновление) данных не производится.
+[Restart=N]
+          </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Zookeeper">
+		<xs:annotation>
+			<xs:documentation>Тег конфигурации Zookeeper</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="ObservedNodes" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Persistents" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="PersistentNode" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="Path" type="xs:string"/>
+												<xs:attribute name="ClassName" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Sequentials" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="SequentialNode" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:attribute name="ParentPath" type="xs:string"/>
+												<xs:attribute name="ClassName" type="xs:string"/>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Ephemerals" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="EphemeralNode" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="UpNode" minOccurs="0">
+					<xs:complexType>
+						<xs:attribute name="Path"/>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="Host" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Host на котором расположен сервис Zookeeper</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="Port" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Port, по которому доступен сервис Zookeeper</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="RootNode" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Узел Zookeeper, относительно которого начинается дерево ChargesDB</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="Instance" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="amqp_client">
+		<xs:annotation>
+			<xs:documentation>конфигурация сетевого соединения для AMQP клиента</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="tcp_client">
+				<xs:attribute name="MaxSessions" type="xs:positiveInteger" use="optional" fixed="1"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="amqp_server">
+		<xs:annotation>
+			<xs:documentation>конфигурация сетевого соединения для AMQP клиента</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="tcp_server"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ClientTCPPoint">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации клиентской точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ServerTCPPoint">
+				<xs:attribute name="Host" use="optional" default="localhost">
+					<xs:annotation>
+						<xs:documentation>IP адрес или сетевое имя  сервера, с которым устанавливается TCP/IP соединение с максимальной длиной имени 32 символа.
+В зависимости от настроек локальной сети и в случае использования логического имени сервера, при установке подсистемы на WIN32 платформе, возможно, понадобится связывание логического имени и IP адреса сервера добавлением связующей строки через «WINNT\system32\drivers\etc\hosts» файл.
+[Restart=N]</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="32"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+				<xs:attribute name="ReconnectTimeout" type="non_negative_timeout" use="optional" default="10s">
+					<xs:annotation>
+						<xs:documentation>Задает время ожидания в мсек между попытками со стороны GUP клиента восстановить соединение с сервером.
+[Restart=N]</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="Enable" type="xs:boolean" use="optional" default="1">
+					<xs:annotation>
+						<xs:documentation>
+              Уcтанавливает режим активности канала:
+              Допустимые значения (0|1)
+              •	«1» – канал активен: поддерживает работу текущего соединения или установление нового соединения,
+              •	«0» – канал неактивен: текущее сетевое соединение разрывается, устаноление новых соединений не поддерживается.
+              Тип: boolean
+              Значение по умолчанию - "1".
+              Возможные значения: 0 1
+              Изменение параметра не требует перезагрузки.
+            </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="ServerTCPPoint">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации серверной точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="Port" use="required">
+			<xs:annotation>
+				<xs:documentation>TCP/IP порт, по которому устанавливается соединение.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:unsignedShort">
+					<xs:minInclusive value="1"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="LocalIpAddress" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Адрес локальной IP сети, через которую будет работать сервер. Длина не более 32 символов. В случае, если параметр имеет пустое значение, локальный IP адрес при установке TCP/IP соединения выбирается автоматически.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="32"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="TcpNoDelay" type="xs:boolean" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Флаг отключения алгоритма Nagle для TCP/IP соединения:
+“0” – предпочтительно для сетей с низкой пропускной способностью в режиме большой нагрузки,
+“1” – предпочтительно в режиме малой нагрузки для любых сетей или в режиме большой нагрузки для сетей с высокой пропускной способностью.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SendBufferSize" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Размер TCP/IP буфера на отсылку сообщений в байтах. 0 - используется размер установленый в ОС.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ReadBufferSize" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+          Размер TCP/IP буфера на прием сообщений в байтах. 0 - используется размер установленый в ОС.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="KeepAliveTimeout" type="non_negative_timeout" use="optional" default="30s">
+			<xs:annotation>
+				<xs:documentation>Период времени в мсек, через  который коммуникационная точка будет отсылать сообщения в канал TCP/IP в случае отсутствия за данный период входящих сообщений. Целью является проверка TCP/IP соединения в случаях, когда установленное соединение за заданный период времени не проявляет активность. 
+При значении “0” механизм инициализации обменом сообщениями со стороны точки прекращается. 
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxConnCount" type="connections_uint32" use="optional" default="30">
+			<xs:annotation>
+				<xs:documentation>
+          Число параллельных соединений к LDAP серверу.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="ServerClientTCPPoint">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации клиентской точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="ClientTCPPoint">
+				<xs:attribute name="IsServer" type="xs:boolean" use="optional" default="0">
+					<xs:annotation>
+						<xs:documentation>
+              Уcтанавливает тип TCP/IP соединения:
+              Допустимые значения (0|1)
+              •	«1» – точка является сервером,
+              •	«0» – точка является клиентом.
+              Тип: boolean
+              Значение по умолчанию - "0".
+              Возможные значения: 0 1
+              Изменение параметра требует перезагрузки.
+            </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TcpPointBase">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации серверной точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="Port" use="required">
+			<xs:annotation>
+				<xs:documentation>
+          TCP/IP порт, по которому будут устанавливаться соединения.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:unsignedShort">
+					<xs:minInclusive value="1"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="LocalIPAddress" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>
+          Локальный IP адрес, через которую будут устанавливаться соединения. В случае, если параметр имеет пустое значение, локальный IP адрес при установке TCP/IP соединения выбирается автоматически.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="45"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="TcpNoDelay" type="xs:boolean" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+          Флаг использования алгоритма Nagle для TCP/IP соединения:
+          “0” – предпочтительно для сетей с низкой пропускной способностью в режиме большой нагрузки,
+          “1” – предпочтительно в режиме малой нагрузки для любых сетей или в режиме большой нагрузки для сетей с высокой пропускной способностью.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SendBufferSize" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+          Размер TCP/IP буфера на отсылку сообщений в байтах. 0 - используется размер установленый в ОС.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ReadBufferSize" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+          Размер TCP/IP буфера на чтение сообщений в байтах. 0 - используется размер установленый в ОС.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="KeepAliveTimeout" type="non_negative_timeout" use="optional" default="30s">
+			<xs:annotation>
+				<xs:documentation>
+          Период времени, по истечении которого в случае отсутствия входных данных с удалённой стороны инициализируется (при наличии такового) механизм проверки активности соединения путём отсылки keep-alive запроса. При значении “0” отсылка keep-alive сообщений не производится.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="InactiveTimeout" type="non_negative_timeout" use="optional" default="70s">
+			<xs:annotation>
+				<xs:documentation>
+          Период времени, по истечении которого  производится разрыв соединения в случае отсутствия входных данных. При использовании keep-alive сообщений рекомендуется задавать этот параметр с учётом времени ожидания ответа на отосланный keep-alive запрос. При значении '0' параметр не анализируется.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ResponseTimeout" type="positive_timeout" use="optional" default="10s"/>
+		<xs:attribute name="PointStatistic" type="xs:boolean" use="optional" default="1">
+			<xs:annotation>
+				<xs:documentation>
+          Флаг необходимости сбора статистики по точке. Агрегирует статистику по всем соединениям, открытым через данную точку.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SessionStatistic" type="xs:boolean" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+          Флаг необходимости сбора статистики по конкретным TCP сессиям.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ReconnectTimeout" type="positive_timeout" use="optional" default="10s">
+			<xs:annotation>
+				<xs:documentation>
+          Задает время ожидания между попытками установки соединения. Заданное время выдерживается в случае неудачной попытки установки соединения.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxSessions" type="xs:positiveInteger" use="optional" default="30">
+			<xs:annotation>
+				<xs:documentation>
+          Максимальное число открытых TCP соединений для данной точки.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxMessagesPerSecond" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>
+          Максимальное число отсылаемых в секунду сообщений, ограничивает пропускную способность соединения.
+          [Restart=N]
+        </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Enable" type="xs:boolean" use="optional" default="1"/>
+	</xs:complexType>
+	<xs:complexType name="TcpClientBase">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации клиентской точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="TcpPointBase">
+				<xs:attribute name="MaxSessions" type="xs:positiveInteger" use="optional" default="1">
+					<xs:annotation>
+						<xs:documentation>
+              Максимальное число открытых TCP соединений для данной точки.
+              [Restart=N]
+            </xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TcpClient">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации клиентской точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="TcpClientBase">
+				<xs:attribute name="Host" use="required">
+					<xs:annotation>
+						<xs:documentation>
+              IP адрес или сетевое имя  сервера, с которым устанавливается TCP/IP соединение.
+              [Restart=N]
+            </xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:string">
+							<xs:maxLength value="45"/>
+							<xs:minLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TcpServer">
+		<xs:complexContent>
+			<xs:extension base="TcpPointBase"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TelnetServer">
+		<xs:annotation>
+			<xs:documentation>конфигурация сетевого соединения для telnet сервера</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="TcpServer">
+				<xs:attribute name="MaxMessagesPerSecond" type="xs:nonNegativeInteger" use="optional" fixed="0"/>
+				<xs:attribute name="KeepAliveTimeout" type="non_negative_timeout" use="optional" fixed="0"/>
+				<xs:attribute name="InactiveTimeout" type="non_negative_timeout" use="optional" default="5m"/>
+				<xs:attribute name="ResponseTimeout" type="positive_timeout" use="optional" fixed="10s"/>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TurnType">
+		<xs:attribute name="ID" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Уникальный идентификатор записи. Обязательно должен содержать символы латинского алфавита.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Src" use="required">
+			<xs:annotation>
+				<xs:documentation>Источник сообщений журнала. 
+Под источником понимаются внутренние компоненты подсистемы. Так как вывод информации от всех компонент осуществляется в общий файл журналирования параллельно, последовательность записи сообщений может нарушаться. Таким образом, данный параметр предназначен для восстановления порядка вывода цепочек сообщений от различных компонент.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:NMTOKEN">
+					<xs:enumeration value="ALL">
+						<xs:annotation>
+							<xs:documentation/>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="TCP">
+						<xs:annotation>
+							<xs:documentation>компоненты, непосредственно обеспечивающие TCP/IP транспортный протокол</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="SNM">
+						<xs:annotation>
+							<xs:documentation>сообщения от SNMP Agent</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="UDP">
+						<xs:annotation>
+							<xs:documentation>компоненты, непосредственно обеспечивающие UDP/IP транспортный протокол</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="TEL">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые при работе с TELNET сервером</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="DBC">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые при работе с ORACLE сервером</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="CUR">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые при работе основного потока</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="DGN">
+						<xs:annotation>
+							<xs:documentation/>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="LUA"/>
+					<xs:enumeration value="AMQ"/>
+					<xs:enumeration value="PTC"/>
+                    <xs:enumeration value="FCT">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые FILE контроллером при выгрузки данных в файл</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="ZKP"/>
+					<xs:enumeration value="RCV"/>
+					<xs:enumeration value="PCL">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые при обработке конкретного вызова</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="AGR">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые при работе с агрегатами данных</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="PRC">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые при работе основного потока обработки данных (DB Controller)</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+					<xs:enumeration value="JOB">
+						<xs:annotation>
+							<xs:documentation>сообщения, выводимые при запуске периодических процессов</xs:documentation>
+						</xs:annotation>
+					</xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="Svr" use="optional" default="EWIFDS">
+			<xs:annotation>
+				<xs:documentation>Класс выводимого сообщения.
+Так как вывод всей информации приводит к незначительным задержкам в работе подсистемы, в рабочем режиме рекомендуется включать только E, W, I и S сообщения.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value="(E|W|I|F|D|S|P)+">
+						<xs:annotation>
+							<xs:documentation>[E: ERROR: включает вывод всех видов ошибок]
+[W: WARNING: системные предупреждения, не попадающие под квалификацию ошибок]
+[I: INFO: информационные сообщения. В основном вывод протокола загрузки и остановки подсистемы]
+[F: FAKE: различные отладочные сообщения, необходимые для отладки подсистемы и получения дополнительной информации, необходимой для идентификации ошибок в режиме отладки]
+[D: DUMP: двоичные данные запросов в HEX формате представления. Выделены из F в отдельный класс с целью получения возможности в отладочном режиме контролировать оригинальные получаемые или передаваемые данные]
+[S: STATISTIC: сообщения, необходимые для информирования о статистике]
+[P: PACKET: детальное содержание полей сетевых пакетов]</xs:documentation>
+						</xs:annotation>
+					</xs:pattern>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="QueueType">
+		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="Bind">
+				<xs:complexType>
+					<xs:attribute name="RoutingKey" type="xs:string" use="required">
+						<xs:annotation>
+							<xs:documentation>Идентификатор сообщения, перенаправляемого в очередь доставки. Допускается использование масок (*/?).</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="Sources" type="xs:string" use="optional" default="">
+						<xs:annotation>
+							<xs:documentation>Список допустимых источников событий. Источники задаются в фромате type[.name[:channel]]. Пример: PSNP.M0, AMQP.srv:1, TELNET, LUA. Если параметр не задан, в очередь помещаются события из любых источников.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="ID" type="cfg_id_string" use="required">
+			<xs:annotation>
+				<xs:documentation>Идентификатор очереди.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AggregationTimeout" type="non_negative_timeout" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Таймаут аггрегации данных  в очереди. Может быть выдержан как перед, так и после доставки.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="StoreHistory" type="xs:boolean" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Флаг хранения истории доставки. При установленном флаге о доставке не удаляется после окончания доставки и может быть запрошена через интерфейсы BIS/telnet.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="HistoryPeriod" type="non_negative_timeout" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Максимаьлное время хранения информации по доставке события при установленном флаге StoreHistory. 0 - неограничено.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CleanupTimeout" type="positive_timeout" use="optional" default="600s">
+			<xs:annotation>
+				<xs:documentation>Таймаут периодической очистки устареыших данных (по HistoryPeriod и DeliveryTimeout в случае отсутствия активных каналов доставки).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AggregateBeforeDelivery" type="xs:boolean" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Флаг использования AggregationTimeout до/после доставки.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="AllowedDeliveryTime" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Допустимое время доставки. Формат: 'HH:MM-HH:MM]', пустая строка - не задано. В случае если время доставки не попадает в заданный диапазон, задача доставки завершается со статусом 'cancelled'.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:pattern value=""/>
+					<xs:pattern value="[0-2][0-9]:[0-6][0-9]-[0-2][0-9]:[0-6][0-9]"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="DeliveryTimeout" type="non_negative_timeout" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Таймаут доставки. По истечении задача доставки завершается ос статусом 'expired'. 0 - время доставки неограничено.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Consumers" type="xs:string" use="required">
+			<xs:annotation>
+				<xs:documentation>Список идентификаторов каналов, через которые следует производить доставку данных события. Доставка может быть произведена через любой из перечисленных каналов. Идентификатором канала является ID нодClient/Server. Для очередей AMQP идентификатор дополняется номером AMQP канала (пример: AMQP:1). Для очередей PSNP ID соответствует идентификатору, передаваемому в bind запросе при выполнениии процедуры установки соединения.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:simpleType name="unc_path_type">
+		<xs:annotation>
+			<xs:documentation>Путь, по спецификации UNC</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="256"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="hex_byte">
+		<xs:annotation>
+			<xs:documentation>
+        Уникальный идентификатор записи.Состоит из двух шестнадцатеричных символов в ASCII (буквы в верхнем регистре) от “01” до “FE”.
+        [Restart=Y]
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:length value="2"/>
+			<xs:pattern value="([0-9]|[A-F])([0-9]|[A-E])"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="non_negative_timeout">
+		<xs:annotation>
+			<xs:documentation>Тип для задания временного промежутка</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="12"/>
+			<xs:pattern value="[0]*\d{1,9}\s*(ms|s|m|h|d)?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="positive_timeout">
+		<xs:annotation>
+			<xs:documentation>Тип для задания временного промежутка</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="12"/>
+			<xs:pattern value="[1-9]\d{0,8}\s*(ms|s|m|h|d)?"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="positive_timeout_sec">
+		<xs:annotation>
+			<xs:documentation>Тип для задания временного промежутка кратного 1 сек.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="12"/>
+			<xs:pattern value="[1-9]\d{0,8}\s*(s|m|h|d)"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="positive_uint32">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxInclusive value="4294967295"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="connections_uint32">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxInclusive value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="memory_size">
+		<xs:annotation>
+			<xs:documentation>Тип для задания объёма памяти</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:pattern value="\d*\.?\d+\s*(b|((G|M|K)b?))"/>
+			<xs:pattern value=""/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="tcp_point_base">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации серверной точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:attribute name="Host" type="hostname_string" use="optional">
+			<xs:annotation>
+				<xs:documentation>IP адрес или сетевое имя  сервера, с которым устанавливается TCP/IP соединение.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Port" use="required">
+			<xs:annotation>
+				<xs:documentation>TCP/IP порт, по которому будут устанавливаться соединения.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:unsignedShort">
+					<xs:minInclusive value="1"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="LocalIPAddress" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Локальный IP адрес, через которую будут устанавливаться соединения. В случае, если параметр имеет пустое значение, локальный IP адрес при установке TCP/IP соединения выбирается автоматически.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:maxLength value="45"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="TcpNoDelay" type="xs:boolean" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Флаг использования алгоритма Nagle для TCP/IP соединения:
+“0” – предпочтительно для сетей с низкой пропускной способностью в режиме большой нагрузки,
+“1” – предпочтительно в режиме малой нагрузки для любых сетей или в режиме большой нагрузки для сетей с высокой пропускной способностью.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SendBufferSize" type="memory_size" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Размер TCP/IP буфера на отсылку сообщений в байтах. 0 - используется размер установленый в ОС.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ReadBufferSize" type="memory_size" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Размер TCP/IP буфера на чтение сообщений в байтах. 0 - используется размер установленый в ОС.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="KeepAliveTimeout" type="non_negative_timeout" use="optional" default="60s">
+			<xs:annotation>
+				<xs:documentation>Период времени, по истечении которого в случае отсутствия входных данных с удалённой стороны инициализируется (при наличии такового) механизм проверки активности соединения путём отсылки keep-alive запроса. При значении “0” отсылка keep-alive сообщений не производится. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="InactiveTimeout" type="non_negative_timeout" use="optional" default="70s">
+			<xs:annotation>
+				<xs:documentation>Период времени, по истечении которого  производится разрыв соединения в случае отсутствия входных данных. При использовании keep-alive сообщений рекомендуется задавать этот параметр с учётом времени ожидания ответа на отосланный keep-alive запрос. При значении '0' параметр не анализируется.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ResponseTimeout" type="positive_timeout" use="optional" default="10s">
+			<xs:annotation>
+				<xs:documentation>Задаёт таймаут на ожидание ответа от удалённой стороны.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="PointStatistic" type="xs:boolean" use="optional" default="1">
+			<xs:annotation>
+				<xs:documentation>Флаг необходимости сбора статистики по точке. Агрегирует статистику по всем соединениям, открытым через данную точку.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="SessionStatistic" type="xs:boolean" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Флаг необходимости сбора статистики по конкретным TCP сессиям. </xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ReconnectTimeout" type="positive_timeout" use="optional" default="10s">
+			<xs:annotation>
+				<xs:documentation>Задает время ожидания между попытками установки соединения. Заданное время выдерживается в случае неудачной попытки установки соединения.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxSessions" type="xs:positiveInteger" use="optional" default="30">
+			<xs:annotation>
+				<xs:documentation>Максимальное число открытых TCP соединений для данной точки.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="MaxMessagesPerSecond" type="xs:nonNegativeInteger" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>Максимальное число отсылаемых в секунду сообщений, ограничивает пропускную способность соединения.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Enable" type="xs:boolean" use="optional" default="1">
+			<xs:annotation>
+				<xs:documentation>Флаг, позволяющий включать/отключать TCP точку.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ProxyHost" type="hostname_string" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>IP адрес или сетевое имя  прокси сервера, через который устанавливается TCP/IP соединение.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ProxyPort" type="xs:unsignedShort" use="optional" default="0">
+			<xs:annotation>
+				<xs:documentation>TCP/IP порт прокси сервера, через который будут устанавливаться соединения.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ProxyAuth" type="xs:string" use="optional" default="">
+			<xs:annotation>
+				<xs:documentation>Pначение вида "login:password"
+для авторизации на прокси сервере.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="ProxyType" type="proxy_type" use="optional" default="HTTP">
+			<xs:annotation>
+				<xs:documentation>Тип прокси сервера (на данный момент поддерживается только HTTP).</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="RequestQueueLimit" type="xs:positiveInteger" use="optional" default="1000">
+			<xs:annotation>
+				<xs:documentation>Максимальное число запросов, находящихся в одновременной обработке по соединению, установленному в контексте данной точки.
+[Restart=N]</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="tcp_client">
+		<xs:annotation>
+			<xs:documentation>Базовый тип конфигурации клиентской точки связи.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:restriction base="tcp_point_base">
+				<xs:attribute name="MaxSessions" type="xs:positiveInteger" use="optional" default="1"/>
+				<xs:attribute name="Host" use="required">
+					<xs:simpleType>
+						<xs:restriction base="hostname_string">
+							<xs:minLength value="1"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:attribute>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="tcp_server">
+		<xs:complexContent>
+			<xs:restriction base="tcp_point_base">
+				<xs:attribute name="Host" type="hostname_string" use="optional" fixed=""/>
+				<xs:attribute name="ProxyHost" type="hostname_string" use="optional" fixed=""/>
+				<xs:attribute name="ProxyPort" type="xs:unsignedShort" use="optional" fixed="0"/>
+				<xs:attribute name="ProxyAuth" type="xs:string" use="optional" fixed=""/>
+				<xs:attribute name="ProxyType" type="proxy_type" use="optional" fixed="HTTP">
+					<xs:annotation>
+						<xs:documentation>Тип прокси сервера (на данный момент поддерживается только HTTP).
+[Restart=N]</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="proxy_type">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="HTTP"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="hostname_string">
+		<xs:annotation>
+			<xs:documentation>Строковый тип для задания имени хоста.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:minLength value="0"/>
+			<xs:maxLength value="45"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="parsing_type">
+		<xs:annotation>
+			<xs:documentation>
+        Тип кодирования/декодирования.
+        "CSV" - Текстовый формат CSV (разделитель запятая).
+        "ASN" - Двоичный формат ASN.1.
+        "JSON" - Текстовый формат представления структурированых данных.
+        [Restart=N]
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="CSV"/>
+			<xs:enumeration value="ASN"/>
+			<xs:enumeration value="JSON"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="partition_type">
+		<xs:annotation>
+			<xs:documentation>
+        Период портиционирования.
+        "NONE" - Портиционирование не используется
+        "DAY" - День
+        "MONTH" - Месяц
+        "YEAR" - Год
+        [Restart=N]
+      </xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="NONE"/>
+			<xs:enumeration value="DAY"/>
+			<xs:enumeration value="MONTH"/>
+			<xs:enumeration value="YEAR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="amqp_shortstring_req">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+			<xs:minLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="amqp_shortstring">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="amqp_chanel_id">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:maxExclusive value="65535"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="amqp_content_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="application/json"/>
+			<xs:enumeration value="application/ber-stream"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="amqp_delivery_mode">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="default"/>
+			<xs:enumeration value="persistent"/>
+			<xs:enumeration value="transient"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="cfg_id_string">
+		<xs:restriction base="xs:string">
+			<xs:minLength value="1"/>
+			<xs:maxLength value="32"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="login_string">
+		<xs:annotation>
+			<xs:documentation>Тип для задания логина.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="password_string">
+		<xs:annotation>
+			<xs:documentation>Тип для задания пароля.</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="255"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="http_content_dump">
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="all"/>
+			<xs:enumeration value="in"/>
+			<xs:enumeration value="out"/>
+			<xs:enumeration value="none"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ptcp_shard_type">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SG"/>
+			<xs:enumeration value="CG"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
